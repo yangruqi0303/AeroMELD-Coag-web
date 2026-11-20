@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafbfc">
+  <title>AeroMELD-Coag · Aerosol dynamics in latent space</title>
+  <meta name="description" content="Learning aerosol coagulation dynamics in a compact latent state while retaining size, composition, and cloud-relevant information.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+  <script src="result-animations.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header">
+    <div class="nav-wrap">
+      <a class="brand" href="#overview" aria-label="AeroMELD-Coag home">AeroMELD<span>-Coag</span></a>
+      <nav aria-label="Main navigation"><a href="#overview">Overview</a><a href="#how-it-works">Method</a><a href="#results">Results</a><a href="#comparison">Comparison</a><a href="#paper">Citation</a></nav>
+
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="overview">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="container hero-copy">
+        <h1>AeroMELD-Coag: Learning Aerosol Coagulation Dynamics in Latent Space</h1>
+        <p class="authors">Wenhan Tang<span>·</span>Ruqi Yang<span>·</span>Jeffrey H. Curtis<span>·</span>Ehsan Saleh<span class="mobile-author-separator">·</span><br> Lekha Patel<span>·</span>Peter A. Bosler<span>·</span>Nicole Riemer<span>·</span>Matthew West</p>
+        <p class="affiliations">University of Illinois Urbana-Champaign &nbsp;·&nbsp; University of Wisconsin–Madison &nbsp;·&nbsp; Sandia National Laboratories</p>
+        <div class="hero-actions"><a class="button" href="https://arxiv.org/abs/2609.31271" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg>Paper</a><a class="button" href="#how-it-works"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M9 6h9v9M6 9v9h9"/></svg>Method</a><a class="button" href="#paper"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h5v6H7v5H4v-5zM15 6h5v6h-3v5h-3v-5z"/></svg>BibTeX</a></div>
+      </div>
+      <div class="container hero-results">
+        <figure class="result-demo">
+          <figcaption><strong>Coagulation.</strong> A 48-hour test trajectory.</figcaption>
+          <div class="demo-card" id="rollout-demo">
+            <div class="demo-heading"><h2>Predicting aerosol evolution</h2><p>Ten evolving variables · selected held-out case</p></div>
+            <div class="demo-readouts three"><div><span>Elapsed time</span><strong id="rollout-time">0.0 h</strong></div><div><span>PartMC number</span><strong id="number-reference">—</strong></div><div><span>AeroMELD number</span><strong id="number-prediction">—</strong></div></div>
+            <svg id="number-animation" viewBox="0 0 500 285" role="img" aria-label="Animated number-concentration trajectories from the selected published 48-hour rollout"></svg>
+            <div class="demo-legend"><span class="ref">PartMC</span><span class="aero">AeroMELD</span><span class="sectional">Sectional</span></div>
+            <div class="latent-subheading"><h3>Nine latent shape coordinates</h3><span>solid: PartMC · dashed: AeroMELD</span></div>
+            <svg id="latent-animation" viewBox="0 0 500 205" role="img" aria-label="Nine latent-coordinate reference and prediction traces from the same published rollout"></svg>
+            <div class="demo-controls"><button type="button" id="rollout-play" class="plot-play" aria-label="Pause rollout animation" aria-pressed="true">Ⅱ</button><label class="sr-only" for="rollout-position">Elapsed time in the published rollout</label><input type="range" min="0" max="48" value="0" step="0.1" id="rollout-position"><span>48 h</span></div>
+          </div>
+          <p class="demo-source">48 h rollout · <a href="assets/source-figures/rollout.pdf" target="_blank" rel="noopener">Source figure</a></p>
+        </figure>
+        <figure class="result-demo">
+          <figcaption><strong>Cloud responses.</strong> Predictions at 48 h.</figcaption>
+          <div class="demo-card" id="spectral-demo">
+            <div class="demo-heading spectral-heading"><div><h2 id="spectrum-heading">Cloud activation</h2><p>Same aerosol population, three representations</p></div><div class="spectrum-kind" role="tablist" aria-label="Cloud response"><button role="tab" id="spectrum-tab-ccn" aria-selected="true" aria-controls="spectrum-context" data-spectrum="ccn">CCN</button><button role="tab" id="spectrum-tab-freezing" aria-selected="false" aria-controls="spectrum-context" data-spectrum="freezing" tabindex="-1">Freezing</button></div></div>
+            <div class="demo-readouts four"><div><span id="scan-label">Supersaturation</span><strong id="scan-value">0.001</strong></div><div><span>PartMC</span><strong id="spectrum-reference">—</strong></div><div><span>AeroMELD</span><strong id="spectrum-prediction">—</strong></div><div><span>Sectional</span><strong id="spectrum-sectional">—</strong></div></div>
+            <svg id="spectrum-animation" viewBox="0 0 500 330" role="img" aria-label="Published cloud-response spectra for the selected mixing-state case"></svg>
+            <div class="demo-legend"><span class="ref">PartMC</span><span class="aero">AeroMELD</span><span class="sectional">Sectional</span></div>
+            <div class="case-switch" role="group" aria-label="Mixing-state case"><button type="button" class="selected" data-case="complex" aria-pressed="true">Complex mixing state</button><button type="button" data-case="simple" aria-pressed="false">Simple mixing state</button></div>
+            <div id="spectrum-context" class="spectrum-context" role="tabpanel" aria-labelledby="spectrum-tab-ccn"><p id="spectrum-explanation">The sectional model overestimates activation in this case.</p></div>
+            <div class="demo-controls"><button type="button" id="spectrum-play" class="plot-play" aria-label="Pause spectrum animation" aria-pressed="true">Ⅱ</button><label class="sr-only" for="spectrum-position">Scan position across the spectrum at 48 hours</label><input type="range" min="0" max="1" value="0" step="0.001" id="spectrum-position"><span id="spectrum-axis-note">scan s</span></div>
+          </div>
+          <p class="demo-source">48 h spectra · <a href="assets/source-figures/ccn.pdf" id="spectrum-source" target="_blank" rel="noopener">Source figure</a></p>
+        </figure>
+      </div>
+      <div class="container metric-strip"><div><strong>10 <small>vs 320</small></strong><span>evolving variables</span></div><div><strong>13.5<em>%</em></strong><span>mean composition error · 31.2% sectional</span></div><div><strong>0.56<em>%</em></strong><span>mean freezing error · 1.72% sectional</span></div><div><strong>0.427<em> ms</em></strong><span>GPU integration per trajectory</span></div></div>
+      <p class="container metric-note"><a href="#comparison">Evaluation and timing details</a></p>
+    </section>
+
+    <section class="section how-it-works" id="how-it-works"><div class="container"><h2 class="how-label">How it works</h2></div>      <figure class="container hero-figure">
+        <figcaption>The fixed encoder supplies the initial state. The neural ODE advances it through coagulation, and the decoder returns physical quantities.</figcaption>
+        <div class="architecture-stage" id="architecture-stage" data-view="all">
+          <img src="assets/framework.png" alt="AeroMELD-Coag architecture. The initial particle population is encoded once. A scale-covariant neural ODE recursively advances nine shape coordinates and total number. At output times, the fixed decoder returns size-resolved composition, CCN activation, optical properties, and frozen fraction." width="1720" height="1320" fetchpriority="high">
+          <div class="diagram-focus" aria-hidden="true"></div>
+          <button class="zoom-figure" type="button" data-zoom="assets/framework.png" aria-label="Enlarge the architecture figure"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6M15 3h6v6M21 15v6h-6M3 15v6h6"/></svg></button>
+        </div>
+        <div class="diagram-toolbar"><div class="diagram-tabs" role="tablist" aria-label="Explore the architecture"><button role="tab" id="diagram-tab-all" aria-selected="true" aria-controls="diagram-description" data-view="all">Full framework</button><button role="tab" id="diagram-tab-encode" aria-selected="false" aria-controls="diagram-description" data-view="encode" tabindex="-1">Encoding</button><button role="tab" id="diagram-tab-evolve" aria-selected="false" aria-controls="diagram-description" data-view="evolve" tabindex="-1">Latent dynamics</button><button role="tab" id="diagram-tab-decode" aria-selected="false" aria-controls="diagram-description" data-view="decode" tabindex="-1">Physical outputs</button></div><button class="diagram-play" id="diagram-play" type="button" aria-pressed="false">Walk through</button></div>
+        <p id="diagram-description" role="tabpanel" aria-labelledby="diagram-tab-all">The encoder is used at initialization. The neural ODE then advances N and z, and the decoder is evaluated at output times.</p>
+      </figure>
+    </section>
+
+    <section class="section framework-section" id="framework">
+      <div class="container"><div class="section-heading"><h2>Method</h2><p>Follow the connection between the particle population, its learned dynamics, and the physical quantities recovered from it.</p></div>
+        <div class="framework-explorer">
+          <div class="step-list" role="tablist" aria-label="Framework stages" aria-orientation="vertical">
+            <button class="step active" id="tab-encode" role="tab" aria-selected="true" aria-controls="stage-panel" data-stage="encode"><span class="step-symbol">E</span><span><strong>Encode the population</strong><small>Particles become a compact state.</small></span></button>
+            <button class="step" id="tab-evolve" role="tab" aria-selected="false" aria-controls="stage-panel" data-stage="evolve" tabindex="-1"><span class="step-symbol">∂t</span><span><strong>Evolve in latent space</strong><small>Advance the state recursively.</small></span></button>
+            <button class="step" id="tab-decode" role="tab" aria-selected="false" aria-controls="stage-panel" data-stage="decode" tabindex="-1"><span class="step-symbol">D</span><span><strong>Decode physical outputs</strong><small>Connect predictions to aerosol behavior.</small></span></button>
+          </div>
+          <div class="stage-panel" id="stage-panel" role="tabpanel" aria-labelledby="tab-encode" tabindex="0"><span id="stage-kicker" class="tiny-label">A population-level representation</span><h3 id="stage-title">Retain population structure in a small learned state.</h3><div class="stage-equation" id="stage-equation">N = Σ w<sub>p</sub><span>z = (1/N) Σ w<sub>p</sub> φ(x<sub>p</sub>)</span></div><p id="stage-description">A shared particle encoder maps species-mass vectors to learned features. Number-weighted aggregation gives nine shape coordinates, while total number concentration is retained explicitly.</p><p class="stage-note" id="stage-note">The encoder and decoder follow the existing AeroMELD representation and remain fixed during dynamics training.</p></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="section physics-section" id="physics"><div class="container physics-layout"><div class="physics-copy"><h2>Concentration scaling</h2><p>Binary collisions fix how coagulation rates depend on concentration. AeroMELD-Coag incorporates this dependence explicitly and learns the remaining dependence on population shape.</p><p class="physics-detail">At the same normalized population and collision environment, a concentration change has a prescribed effect on the instantaneous rates.</p></div><div class="scaling-card"><div class="math-pair"><div><span class="tiny-label">Number concentration</span><p>dN/dt = <span>N²</span> F(z)</p></div><div><span class="tiny-label">Population shape</span><p>dz/dt = <span>N</span> G(z)</p></div></div><div class="scale-control"><label for="concentration">Concentration multiplier <output id="scale-value" for="concentration">2×</output></label><input id="concentration" type="range" min="1" max="4" value="2" step="0.5" aria-describedby="scale-note"><div class="scale-ticks" aria-hidden="true"><span>1×</span><span>2×</span><span>3×</span><span>4×</span></div></div><div class="scale-response" aria-live="polite"><div><strong id="number-rate">4×</strong><span>number-loss rate magnitude</span></div><div><strong id="shape-rate">2×</strong><span>shape-evolution rate</span></div></div><p id="scale-note">Analytical scaling at fixed shape and environment; this control illustrates the equations, not a new model simulation.</p></div></div></section>
+
+    <section class="section results-section" id="results"><div class="container"><div class="section-heading"><h2>Mixing state and cloud responses</h2><p>Compare decoded predictions with particle-resolved references and a conventional sectional model.</p></div>
+      <div class="result-tabs" role="tablist" aria-label="Result to explore"><button id="result-tab-ccn" role="tab" aria-selected="true" aria-controls="result-panel" data-result="ccn">Cloud activation</button><button id="result-tab-freezing" role="tab" aria-selected="false" aria-controls="result-panel" data-result="freezing" tabindex="-1">Immersion freezing</button><button id="result-tab-dynamics" role="tab" aria-selected="false" aria-controls="result-panel" data-result="dynamics" tabindex="-1">Rollout accuracy</button></div>
+      <div id="result-panel" class="result-panel" role="tabpanel" aria-labelledby="result-tab-ccn"><div class="result-description"><div><h3 id="result-title">Composition differences change cloud activation.</h3><p id="result-text">In this selected case, particles of similar size have different critical supersaturations. The sectional representation averages composition within each size bin. AeroMELD more closely follows the particle-resolved activation spectrum.</p></div></div><a id="result-image-link" href="assets/ccn.png" target="_blank" rel="noopener" aria-label="Open result figure at full size"><img id="result-image" src="assets/ccn.png" alt="Selected CCN case comparing activation spectra and wet-diameter versus critical-supersaturation distributions." loading="lazy" width="1584" height="888"></a><p class="figure-caption" id="result-caption">Selected mixing-state example from the arXiv paper. Particle maps show PartMC and sectional representations; AeroMELD is evaluated through its predicted activation spectrum.</p></div>
+      <figure class="accuracy-chart" id="comparison"><h2>Comparison with the sectional model</h2><div class="chart-legend"><span class="legend-aero">AeroMELD</span><span class="legend-sectional">Sectional</span></div><svg viewBox="0 0 1060 320" role="img" aria-label="Pooled mean errors: composition 13.5 versus 31.2 percent, CCN activation 1.38 versus 1.98 percent, and frozen fraction 0.56 versus 1.72 percent."><text x="165" y="25" text-anchor="middle" class="chart-title">Size-resolved composition</text><path d="M 60 250.0 H 305" class="gridline"/><text x="50" y="255.0" text-anchor="end" class="tick">0%</text><path d="M 60 205.0 H 305" class="gridline"/><text x="50" y="210.0" text-anchor="end" class="tick">10%</text><path d="M 60 160.0 H 305" class="gridline"/><text x="50" y="165.0" text-anchor="end" class="tick">20%</text><path d="M 60 115.0 H 305" class="gridline"/><text x="50" y="120.0" text-anchor="end" class="tick">30%</text><path d="M 60 70.0 H 305" class="gridline"/><text x="50" y="75.0" text-anchor="end" class="tick">40%</text><rect x="103" y="189.25" width="57" height="60.75" rx="2" class="bar-aero"/><text x="131.5" y="179.25" text-anchor="middle" class="bar-value">13.5%</text><text x="131.5" y="280" text-anchor="middle" class="tick">AeroMELD</text><rect x="207" y="109.6" width="57" height="140.4" rx="2" class="bar-sectional"/><text x="235.5" y="99.6" text-anchor="middle" class="bar-value">31.2%</text><text x="235.5" y="280" text-anchor="middle" class="tick">Sectional</text><text x="525" y="25" text-anchor="middle" class="chart-title">CCN activation</text><path d="M 420 250.0 H 665" class="gridline"/><text x="410" y="255.0" text-anchor="end" class="tick">0%</text><path d="M 420 205.0 H 665" class="gridline"/><text x="410" y="210.0" text-anchor="end" class="tick">0.625%</text><path d="M 420 160.0 H 665" class="gridline"/><text x="410" y="165.0" text-anchor="end" class="tick">1.25%</text><path d="M 420 115.0 H 665" class="gridline"/><text x="410" y="120.0" text-anchor="end" class="tick">1.875%</text><path d="M 420 70.0 H 665" class="gridline"/><text x="410" y="75.0" text-anchor="end" class="tick">2.5%</text><rect x="463" y="150.64000000000001" width="57" height="99.35999999999999" rx="2" class="bar-aero"/><text x="491.5" y="140.64000000000001" text-anchor="middle" class="bar-value">1.38%</text><text x="491.5" y="280" text-anchor="middle" class="tick">AeroMELD</text><rect x="567" y="107.44" width="57" height="142.56" rx="2" class="bar-sectional"/><text x="595.5" y="97.44" text-anchor="middle" class="bar-value">1.98%</text><text x="595.5" y="280" text-anchor="middle" class="tick">Sectional</text><text x="885" y="25" text-anchor="middle" class="chart-title">Frozen fraction</text><path d="M 780 250.0 H 1025" class="gridline"/><text x="770" y="255.0" text-anchor="end" class="tick">0%</text><path d="M 780 205.0 H 1025" class="gridline"/><text x="770" y="210.0" text-anchor="end" class="tick">0.5%</text><path d="M 780 160.0 H 1025" class="gridline"/><text x="770" y="165.0" text-anchor="end" class="tick">1%</text><path d="M 780 115.0 H 1025" class="gridline"/><text x="770" y="120.0" text-anchor="end" class="tick">1.5%</text><path d="M 780 70.0 H 1025" class="gridline"/><text x="770" y="75.0" text-anchor="end" class="tick">2%</text><rect x="823" y="199.6" width="57" height="50.400000000000006" rx="2" class="bar-aero"/><text x="851.5" y="189.6" text-anchor="middle" class="bar-value">0.56%</text><text x="851.5" y="280" text-anchor="middle" class="tick">AeroMELD</text><rect x="927" y="95.19999999999999" width="57" height="154.8" rx="2" class="bar-sectional"/><text x="955.5" y="85.19999999999999" text-anchor="middle" class="bar-value">1.72%</text><text x="955.5" y="280" text-anchor="middle" class="tick">Sectional</text></svg><figcaption>Pooled mean symmetric errors over 2,000 test trajectories and 49 hourly states. The frozen-fraction metric uses a logarithmic transform. Vertical scales differ across panels.</figcaption></figure><div class="comparison-summary"><div><h3>Diagnostic accuracy across the test set</h3><p>AeroMELD has lower pooled mean errors for size-resolved composition, CCN activation, and frozen fraction. The sectional model has lower errors for binned mass, binned number, scattering, and absorption.</p></div><div class="error-table-wrap"><table><caption>Pooled mean symmetric error</caption><thead><tr><th scope="col">Diagnostic</th><th scope="col">AeroMELD</th><th scope="col">Sectional</th></tr></thead><tbody><tr><th scope="row">Size-resolved composition</th><td>13.5%</td><td>31.2%</td></tr><tr><th scope="row">CCN activation</th><td>1.38%</td><td>1.98%</td></tr><tr><th scope="row">Frozen fraction</th><td>0.56%</td><td>1.72%</td></tr></tbody></table><p>2,000 test trajectories, 49 hourly states per trajectory. Frozen fraction uses a logarithmic evaluation transform; composition and CCN use untransformed quantities.</p></div></div>
+    </div></section>
+
+    <section class="section efficiency-section"><div class="container efficiency-layout"><div><h2>Integration cost</h2><p>A ten-coordinate evolving state supports batched integration on a GPU. The benchmark compares the cost of advancing coagulation over the same simulated duration.</p><div class="benchmark-conditions"><span>48 h simulated</span><span>60 s integration step</span><span>Diagnostics disabled</span></div></div><div class="benchmark"><div class="benchmark-heading"><span>Time per trajectory</span><span>Lower is faster</span></div><div class="benchmark-row"><div><strong>PyPartMC</strong><span>One CPU core</span></div><div class="benchmark-bar reference-bar"></div><strong>2.19 s</strong></div><div class="benchmark-row"><div><strong>Sectional</strong><span>One CPU core</span></div><div class="benchmark-bar sectional-bar"></div><strong>767 ms</strong></div><div class="benchmark-row aero-row"><div><strong>AeroMELD</strong><span>L40S · batch of 2,000</span></div><div class="benchmark-bar aero-bar"></div><strong>0.427 ms</strong></div><p>Logarithmic bars start at 0.1 ms. GPU time is amortized over the batch. Timing excludes initialization and diagnostic decoding; hardware and batching differ between implementations.</p></div></div></section>
+
+    <section class="section paper-section" id="paper"><div class="container paper-layout"><div><p class="eyebrow">Paper &amp; citation</p><h2>Learning Aerosol Coagulation Dynamics in Latent Space with a Scale-Covariant Neural ODE</h2><p class="paper-meta">arXiv:2609.31271 · 2026</p><p>A proof of concept for advancing aerosol microphysics in a compact learned state while retaining information about aerosol mixing state, toward future large-scale atmospheric models.</p><div class="paper-links"><a class="button primary" href="https://arxiv.org/pdf/2609.31271" target="_blank" rel="noopener">Read the PDF</a><a class="button secondary" href="https://arxiv.org/html/2609.31271v1" target="_blank" rel="noopener">Accessible HTML</a></div><a class="related-paper" href="https://arxiv.org/abs/2607.11073" target="_blank" rel="noopener">Background: the AeroMELD representation</a></div><div class="citation-box"><div class="citation-header"><span>Cite this work</span><button id="copy-citation" type="button">Copy BibTeX</button></div><pre id="bibtex">@misc{tang2026coagulation,
+  title = {Learning Aerosol Coagulation
+    Dynamics in Latent Space with a
+    Scale-Covariant Neural ODE},
+  author = {Tang, Wenhan and Yang, Ruqi
+    and Curtis, Jeffrey H. and Saleh, Ehsan
+    and Patel, Lekha and Bosler, Peter A.
+    and Riemer, Nicole and West, Matthew},
+  year = {2026},
+  eprint = {2609.31271},
+  archivePrefix = {arXiv},
+  primaryClass = {physics.ao-ph},
+  url = {https://arxiv.org/abs/2609.31271}
+}</pre><p id="copy-status" class="copy-status" role="status" aria-live="polite"></p></div></div></section>
+  </main>
+  <dialog id="figure-dialog"><button id="close-figure" type="button" aria-label="Close enlarged figure">Close <span aria-hidden="true">×</span></button><img id="enlarged-image" alt="Enlarged paper figure"></dialog>
+  <footer><div class="container footer-inner"><a class="brand" href="#overview">AeroMELD<span>-Coag</span></a><span>Wenhan Tang, Ruqi Yang, and collaborators</span><a href="https://arxiv.org/abs/2609.31271" target="_blank" rel="noopener">arXiv:2609.31271</a></div></footer>
+</body>
+</html>
